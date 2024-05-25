@@ -1,6 +1,6 @@
 //cd C:\Users\mpaur\OneDrive\Documentos\ITBA\MESE\SOPG\Practica\SOPG_Practica\app\src>
 //C:\Users\mpaur\OneDrive\Documentos\ITBA\MESE\SOPG\Practica\SOPG_Practica\app\src>start prueba.exe
-
+//En Linux se ejecuta con .\prueba
 
 #include <stdio.h>
 
