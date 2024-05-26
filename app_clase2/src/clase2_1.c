@@ -3,11 +3,15 @@
 //En Linux se ejecuta con .\prueba
 
 #include <stdio.h>
+#include <unistd.h>
 
 void main(void)
 {
     int i=10;
     while(1)
+    {
         printf("numero %d\n\r",i++);
+        sleep(1);
+    }    
     return;
 }
