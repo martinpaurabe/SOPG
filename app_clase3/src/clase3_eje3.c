@@ -43,10 +43,10 @@ int main(void) {
         case 0:
             write(STDOUT_FD,"CHILD: This is the child process\n",33);
             close(pfds[0]);              // cerramos read
-            write(pfds[1],"CHILD: first msg\n",17);
             sleep(CHILD_SLEEP_TIME);
-            write(pfds[1],"CHILD: second msg\n",18);
+            write(pfds[1],"CHILD: first msg\n",17);
             sleep(CHILD_SLEEP_TIME*2);
+            printf(" CHILD: I'm outta here!\n");
             exit(0);
 
         default:
@@ -57,7 +57,8 @@ int main(void) {
                 perror("fgets");
             else
                 printf("ingresaste: %s\n", s);
-            exit(0);
-    }
+           printf(" PARENT: I'm outta here!\n");
+           exit(0);
+     }
     return 0;
 }
