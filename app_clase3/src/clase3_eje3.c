@@ -3,6 +3,7 @@
 //C:\Users\mpaur\OneDrive\Documentos\ITBA\MESE\SOPG\Practica\SOPG_Practica\app\src>start prueba.exe
 //-----------------------------------------------------------------------------------------------------------
 
+
 //-----------------------------------------------------------------------------------------------------------
 //En Linux
 //se compila por linea de comando con $ gcc ./src/clase2_eje1.c 
@@ -14,19 +15,24 @@
 //-----------------------------------------------------------------------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <unistd.h>
+#include <errno.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define PARENT_SLEEP_TIME 20
-#define CHILD_SLEEP_TIME 40
 
-void main(void)
-{
+
+#define PARENT_SLEEP_TIME   20
+#define CHILD_SLEEP_TIME    5
+#define STDIN_FD            0
+#define STDOUT_FD           1
+
+int main(void) {
 
     pid_t pid;
-    int rv;
+    pid_t pfds[2];
+    pipe(pfds);
 
     switch (pid = fork()) {
         case -1:
@@ -35,20 +41,23 @@ void main(void)
 
         /* parent exits */
         case 0:
-            printf(" CHILD: This is the child process!\n");
-            printf(" CHILD: My PID is %d\n", getpid());
-            printf(" CHILD: My parent's PID is %d\n", getppid());
+            write(STDOUT_FD,"CHILD: This is the child process\n",33);
+            close(pfds[0]);              // cerramos read
+            write(pfds[1],"CHILD: first msg\n",17);
             sleep(CHILD_SLEEP_TIME);
-            printf(" CHILD: I'm outta here!\n");
+            write(pfds[1],"CHILD: second msg\n",18);
+            sleep(CHILD_SLEEP_TIME*2);
             exit(0);
 
         default:
-            printf("PARENT: This is the parent process!\n");
-            printf("PARENT: My PID is %d\n", getpid());
-            printf("PARENT: My child's PID is %d\n", pid);
-            sleep(PARENT_SLEEP_TIME);
-            printf("PARENT: I'm outta here!\n");
+            write(STDOUT_FD,"PARENT: This is the parent process!\n",36);
+            close(pfds[1]);          // cerramos el FD para write
+            char s[200];
+            if (read(pfds[0],s, sizeof s) < 0)
+                perror("fgets");
+            else
+                printf("ingresaste: %s\n", s);
             exit(0);
     }
-    return;
+    return 0;
 }
