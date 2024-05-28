@@ -6,7 +6,7 @@
 
 //-----------------------------------------------------------------------------------------------------------
 //En Linux
-//se compila por linea de comando con $ gcc ./src/clase2_eje1.c 
+//se compila por linea de comando con $ gcc -Wall -pedantic ./src/clase3_eje2.c -o ./build/clase3_eje2 
 //se ejecuta con $ .\a.out
 //para ver los procesos en otro terminal correr 
 //& watch -n 1 "ps -elf | grep a.out"
