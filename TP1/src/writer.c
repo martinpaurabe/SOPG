@@ -118,9 +118,10 @@ int main(void)
 
 
     char s[300];
+    strcpy(s,"DATA:");
     int numread,numwrite;
     while (1) {
-        if ((numread = read(STDIN_FD, s, 300)) == -1)
+        if ((numread = read(STDIN_FD, s+5, 295)+5) == -1)
         {   
             if(errno != EINTR) //If not an interrut system call
                 perror("DATA MSJ couldn't be read %d");
