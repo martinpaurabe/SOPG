@@ -2,7 +2,7 @@ SRC_DIR = ./src
 OBJ_DIR = ./build
 SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
 OBJ_FILES = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SRC_FILES))
-all: $(OBJ_FILES)
-	gcc -o $(OBJ_DIR)/a.out $(OBJ_FILES) 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	gcc -c $< -o $@
+all:
+	gcc -Wall -pedantic $(SRC_DIR)/reader.c -o $(OBJ_DIR)/reader
+	gcc -Wall -pedantic $(SRC_DIR)/writer.c -o $(OBJ_DIR)/writer
+
