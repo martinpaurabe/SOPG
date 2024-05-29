@@ -91,7 +91,7 @@ int main(void)
             else if(0==strncmp(s,"DATA:",5))
             {
                 printf("reader: read %d bytes: %s \n",  num, s);
-                int fddata = open("Log.txt",O_CREAT|O_WRONLY|O_APPEND);
+                int fddata = open("Log.txt",O_CREAT|O_WRONLY|O_APPEND,S_IRWXU|S_IRWXG|S_IRWXO);
                 if(fddata == -1)
                 {
                     if(errno != EEXIST)
@@ -112,7 +112,7 @@ int main(void)
             else if(0==strncmp(s,"SIGN:1",6))
             {
                 printf("reader: read %d bytes: %s \n",  num, s);
-                int fdsign = open("Sign.txt",O_CREAT|O_WRONLY|O_APPEND);
+                int fdsign = open("Sign.txt",O_CREAT|O_WRONLY|O_APPEND,S_IRWXU|S_IRWXG|S_IRWXO);
                 if(fdsign == -1)
                 {
                     if(errno != EEXIST)
@@ -133,7 +133,7 @@ int main(void)
             else if(0==strncmp(s,"SIGN:2",6))
             {
                 printf("reader: read %d bytes: %s \n",  num, s);
-                int fdsign = open("Sign.txt",O_CREAT|O_WRONLY|O_APPEND);
+                int fdsign = open("Sign.txt",O_CREAT|O_WRONLY|O_APPEND,S_IRWXU|S_IRWXG|S_IRWXO);
                 {
                    if(errno != EEXIST)
                     {
