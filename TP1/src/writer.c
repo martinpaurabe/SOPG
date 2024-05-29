@@ -7,7 +7,7 @@
 //-----------------------------------------------------------------------------------------------------------
 //En Linux
 //se compila por linea de comando con $ gcc -Wall -pedantic ./src/writer.c -o ./build/writer
-//se ejecuta con $ .\a.out
+//Execute on Terminal ./build/writer
 //para ver los procesos en otro terminal correr 
 //& watch -n 1 "ps -elf | grep a.out"
 //la "S" se ve en general porque gran parte del tiempo esta en sleep()
@@ -15,8 +15,8 @@
 //-----------------------------------------------------------------------------------------------------------
 
 /********************** inclusions *******************************************/
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -35,8 +35,7 @@
 
 
 /********************** macros and definitions *******************************/
-//Execute on Terminal ./writer
-#define FIFO_NAME "myfifo"
+#define FIFO_NAME           "myfifo"
 #define STDIN_FD            0
 #define STDOUT_FD           1
 
@@ -94,8 +93,25 @@ int main(void)
 
     //Named FIFO Initialilze
 
-    mkfifo(FIFO_NAME, 0666);
+    if(mkfifo(FIFO_NAME, 0666) == -1)
+    {
+        if(errno == EEXIST)
+            printf("FIFO already exists\n"); 
+        else
+        {
+            perror("FIFO doesn't exist");
+            exit(1);
+        }
+     }    
     fd = open(FIFO_NAME, O_WRONLY);                 //Keep waiting til there is someone to read
+    if(fd == -1)
+    {
+        perror("FIFO couldn't be open");
+        exit(1);
+    }    
+   
+    
+    
     printf("got a reader--type some stuff\n");
 
 
@@ -103,11 +119,11 @@ int main(void)
     int numread,numwrite;
     while (1) {
         if ((numread = read(STDIN_FD, s, 300)) == -1)
-            perror("read");
-        else{
+            perror("DATA MSJ couldn't be read");
+         else{
             s[numread-1] = '\0';
             if ((numwrite = write(fd, s, strlen(s))) == -1)
-                perror("write");
+                perror("DATA MSJ don't sended to FIFO");
             else
                 printf("writer: wrote %d bytes\n", numwrite);
         }  
@@ -122,13 +138,15 @@ void sigint_handler(int sig) {
 }
 
 void sigusr1_handler(int sig) {
-    write(fd,"SIGN:1",6);      
+    if(write(fd,"SIGN:1",6)==-1)
+        perror("error on SIGN:1 didn't send to FIFO");      
     write(STDOUT_FD,"SIGUSR1\n",8);
     return;
 }
 
 void sigusr2_handler(int sig) {
-    write(fd,"SIGN:2",6);     
+    if(write(fd,"SIGN:2",6)==-1)
+        perror("error on SIGN:2 didn't send to FIFO");      
     write(STDOUT_FD,"SIGUSR2\n",8);
     return;
 }
