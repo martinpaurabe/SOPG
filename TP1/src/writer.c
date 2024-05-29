@@ -126,7 +126,7 @@ int main(void)
             if(errno != EINTR) //If not an interrut system call
                 perror("DATA MSJ couldn't be read %d");
         }
-        else
+        else if(numread>5) //fSTDOUT call filter
         {
             s[numread-1] = '\0';
             if ((numwrite = write(fd, s, strlen(s))) == -1)
@@ -145,15 +145,15 @@ void sigint_handler(int sig) {
 }
 
 void sigusr1_handler(int sig) {
-    if(write(fd,"SIGN:1",6)==-1)
+    if(write(fd,"SIGN:1",7)==-1)
         perror("error on SIGN:1 didn't send to FIFO");      
-    write(STDOUT_FD,"SIGUSR1\n",8);
+    write(STDOUT_FD,"SIGUSR1\n",9);
     return;
 }
 
 void sigusr2_handler(int sig) {
-    if(write(fd,"SIGN:2",6)==-1)
+    if(write(fd,"SIGN:2",7)==-1)
         perror("error on SIGN:2 didn't send to FIFO");      
-    write(STDOUT_FD,"SIGUSR2\n",8);
+    write(STDOUT_FD,"SIGUSR2\n",9);
     return;
 }
