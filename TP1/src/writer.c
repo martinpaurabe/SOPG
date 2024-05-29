@@ -39,6 +39,8 @@
 #define STDIN_FD            0
 #define STDOUT_FD           1
 
+#define EXIT_ERROR          1
+
 /********************** internal data declaration ****************************/
 pid_t pid_writer;
 int fd = 0;
@@ -68,7 +70,7 @@ int main(void)
 	sigemptyset(&sa_int.sa_mask);
     if (sigaction(SIGINT, &sa_int, NULL) == -1){
         perror("sigaction");
-        exit(1);
+        exit(EXIT_ERROR);
     }
 
     // User 1 signal process inicitilize
@@ -78,7 +80,7 @@ int main(void)
 	sigemptyset(&sa_usr1.sa_mask);
     if (sigaction(SIGUSR1, &sa_usr1, NULL) == -1){
         perror("sigaction");
-        exit(1);
+        exit(EXIT_ERROR);
     }
 
     // User 2 signal process inicitilize
@@ -88,7 +90,7 @@ int main(void)
 	sigemptyset(&sa_usr2.sa_mask);
     if (sigaction(SIGUSR2, &sa_usr2, NULL) == -1){
         perror("sigaction");
-        exit(1);
+        exit(EXIT_ERROR);
     }
 
     //Named FIFO Initialilze
@@ -100,14 +102,14 @@ int main(void)
         else
         {
             perror("FIFO doesn't exist");
-            exit(1);
+            exit(EXIT_ERROR);
         }
      }    
     fd = open(FIFO_NAME, O_WRONLY);                 //Keep waiting til there is someone to read
     if(fd == -1)
     {
         perror("FIFO couldn't be open");
-        exit(1);
+        exit(EXIT_ERROR);
     }    
    
     
@@ -119,8 +121,12 @@ int main(void)
     int numread,numwrite;
     while (1) {
         if ((numread = read(STDIN_FD, s, 300)) == -1)
-            perror("DATA MSJ couldn't be read");
-         else{
+        {   
+            if(errno != EINTR) //If not an interrut system call
+                perror("DATA MSJ couldn't be read %d");
+        }
+        else
+        {
             s[numread-1] = '\0';
             if ((numwrite = write(fd, s, strlen(s))) == -1)
                 perror("DATA MSJ don't sended to FIFO");

@@ -39,6 +39,8 @@
 #define STDIN_FD            0
 #define STDOUT_FD           1
 
+#define EXIT_ERROR          1
+
 /********************** internal data declaration ****************************/
  
 
@@ -57,15 +59,20 @@ int main(void)
 
     if(mkfifo(FIFO_NAME, 0666) == -1)
     {
-        perror("FIFO doesn't exist");
-        exit(1);
+        if(errno == EEXIST)
+            printf("FIFO already exists\n"); 
+        else
+        {
+            perror("FIFO doesn't exist");
+            exit(EXIT_ERROR);
+        }
     }    
     printf("waiting for writers...\n");
     int fd = open(FIFO_NAME, O_RDONLY);
     if(fd == -1)
     {
         perror("FIFO couldn't be open");
-        exit(1);
+        exit(EXIT_ERROR);
     }    
     printf("got a writer\n");
 
@@ -77,44 +84,71 @@ int main(void)
         else 
         {
             s[num] = '\0';
-            printf("reader: read %d bytes: \"%s\"\n", num, s);
             s[num+1] = '\n';
             
-            if(0==strncmp(s,"DATA:",5))
+            if(num<5)
+                printf("Error en la cantidad de Datos: %d\n",num);
+            else if(0==strncmp(s,"DATA:",5))
             {
+                printf("reader: read %d bytes: %s \n",  num, s);
                 int fddata = open("Log.txt",O_CREAT|O_RDWR|O_APPEND);
                 if(fddata == -1)
                 {
-                    perror("Log.txt couldn't be open");
+                    if(errno != EEXIST)
+                    {
+                        perror("Log.txt couldn't be open");
+                        exit(EXIT_ERROR);
+                    }
                 }    
                 if(write(fddata,s,num+2) == -1)
+                {
                     perror("DATA MSG couldn't be written on Log.txt");
+                    close(fddata);
+                    exit(EXIT_ERROR);
+                }
                 close(fddata);
             }
             else if(0==strncmp(s,"SIGN:1",6))
             {
+                printf("reader: read %d bytes: %s \n",  num, s);
                 int fdsign = open("Sign.txt",O_CREAT|O_RDWR|O_APPEND);
                 if(fdsign == -1)
                 {
-                    perror("Sign.txt couldn't be open");
+                    if(errno != EEXIST)
+                    {
+                        perror("Sign.txt couldn't be open");
+                        exit(EXIT_ERROR);
+                    }   
                 }    
                 if(write(fdsign,s,num+2) == -1)
+                 {
                     perror("SIGN:1 MSG couldn't be written on Sign.txt");
+                    close(fdsign);
+                    exit(EXIT_ERROR);
+                }
                 close(fdsign);
             }
             else if(0==strncmp(s,"SIGN:2",6))
             {
-               int fdsign = open("Sign.txt",O_CREAT|O_RDWR|O_APPEND);
-                if(fdsign == -1)
+                printf("reader: read %d bytes: %s \n",  num, s);
+                int fdsign = open("Sign.txt",O_CREAT|O_RDWR|O_APPEND);
                 {
-                    perror("Sign.txt couldn't be open");
+                   if(errno != EEXIST)
+                    {
+                        perror("Sign.txt couldn't be open");
+                        exit(EXIT_ERROR);
+                    }
                 }    
                 if(write(fdsign,s,num+2) == -1)
-                    perror("SIGN:2 MSG couldn't be written on Sign.txt");
+                {
+                    perror("SIGN:1 MSG couldn't be written on Sign.txt");
+                    close(fdsign);
+                    exit(EXIT_ERROR);
+                }
                 close(fdsign);
             }   
             else
-                perror("Error de Datos");
+                printf("Error en formato de Datos\n");
         }
     }
     while (num > 0);
