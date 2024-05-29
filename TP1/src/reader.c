@@ -91,7 +91,7 @@ int main(void)
             else if(0==strncmp(s,"DATA:",5))
             {
                 printf("reader: read %d bytes: %s \n",  num, s);
-                int fddata = open("Log.txt",O_CREAT|O_RDWR|O_APPEND);
+                int fddata = open("Log.txt",O_CREAT|O_WRONLY|O_APPEND);
                 if(fddata == -1)
                 {
                     if(errno != EEXIST)
@@ -106,12 +106,13 @@ int main(void)
                     close(fddata);
                     exit(EXIT_ERROR);
                 }
-                close(fddata);
+                while(close(fddata))
+                    perror("Log.txt couldn't be open close");
             }
             else if(0==strncmp(s,"SIGN:1",6))
             {
                 printf("reader: read %d bytes: %s \n",  num, s);
-                int fdsign = open("Sign.txt",O_CREAT|O_RDWR|O_APPEND);
+                int fdsign = open("Sign.txt",O_CREAT|O_WRONLY|O_APPEND);
                 if(fdsign == -1)
                 {
                     if(errno != EEXIST)
@@ -126,12 +127,13 @@ int main(void)
                     close(fdsign);
                     exit(EXIT_ERROR);
                 }
-                close(fdsign);
+                while(close(fdsign))
+                    perror("Sign.txt couldn't be open close");
             }
             else if(0==strncmp(s,"SIGN:2",6))
             {
                 printf("reader: read %d bytes: %s \n",  num, s);
-                int fdsign = open("Sign.txt",O_CREAT|O_RDWR|O_APPEND);
+                int fdsign = open("Sign.txt",O_CREAT|O_WRONLY|O_APPEND);
                 {
                    if(errno != EEXIST)
                     {
@@ -145,7 +147,8 @@ int main(void)
                     close(fdsign);
                     exit(EXIT_ERROR);
                 }
-                close(fdsign);
+                while(close(fdsign))
+                    perror("Sign.txt couldn't be open close");
             }   
             else
                 printf("Error en formato de Datos\n");
