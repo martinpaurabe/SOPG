@@ -64,7 +64,7 @@ int main(void)
     pid_writer = getpid();
     printf("PROCESO WRITER PID = %d\n", getpid());
 
-    // Signal Interrupt signal process inicitilize
+    // Signal Interrupt process inicitilize
 	struct sigaction sa_int;
 	sa_int.sa_handler = sigint_handler;
 	sa_int.sa_flags = 0; //SA_RESTART;
@@ -75,7 +75,7 @@ int main(void)
         exit(EXIT_ERROR);
     }
 
-    // signal pipe signal process inicitilize (reader() closes)
+    // signal pipe process inicitilize (reader() closes)
 	struct sigaction sa_pipe;
 	sa_pipe.sa_handler = sigpipe_handler;
 	sa_pipe.sa_flags = 0; //SA_RESTART;
