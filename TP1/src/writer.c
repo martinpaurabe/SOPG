@@ -68,7 +68,8 @@ int main(void)
 	sa_int.sa_handler = sigint_handler;
 	sa_int.sa_flags = 0; //SA_RESTART;
 	sigemptyset(&sa_int.sa_mask);
-    if (sigaction(SIGINT, &sa_int, NULL) == -1){
+    if (sigaction(SIGINT, &sa_int, NULL) == -1)
+    {
         perror("sigaction");
         exit(EXIT_ERROR);
     }
@@ -78,7 +79,8 @@ int main(void)
 	sa_usr1.sa_handler = sigusr1_handler;
 	sa_usr1.sa_flags = 0; //SA_RESTART;
 	sigemptyset(&sa_usr1.sa_mask);
-    if (sigaction(SIGUSR1, &sa_usr1, NULL) == -1){
+    if (sigaction(SIGUSR1, &sa_usr1, NULL) == -1)
+    {
         perror("sigaction");
         exit(EXIT_ERROR);
     }
@@ -88,7 +90,8 @@ int main(void)
 	sa_usr2.sa_handler = sigusr2_handler;
 	sa_usr2.sa_flags = 0; //SA_RESTART;
 	sigemptyset(&sa_usr2.sa_mask);
-    if (sigaction(SIGUSR2, &sa_usr2, NULL) == -1){
+    if (sigaction(SIGUSR2, &sa_usr2, NULL) == -1)
+    {
         perror("sigaction");
         exit(EXIT_ERROR);
     }
@@ -104,7 +107,7 @@ int main(void)
             perror("FIFO doesn't exist");
             exit(EXIT_ERROR);
         }
-     }    
+    }    
     fd = open(FIFO_NAME, O_WRONLY);                 //Keep waiting til there is someone to read
     if(fd == -1)
     {
@@ -120,13 +123,14 @@ int main(void)
     char s[300];
     strcpy(s,"DATA:");
     int numread,numwrite;
-    while (1) {
+    while (1) 
+    {
         if ((numread = read(STDIN_FD, s+5, 295)+5) == 4)
         {   
             if(errno != EINTR) //If not an interrut system call
                 perror("DATA MSJ couldn't be read %d");
         }
-        else //if(numread>5) //fSTDOUT call filter
+        else
         {
             s[numread-1] = '\0';
             if ((numwrite = write(fd, s, strlen(s))) == -1)
@@ -138,20 +142,23 @@ int main(void)
 }
 
 /********************** internal functions definitSion ***********************/
-void sigint_handler(int sig) {
+void sigint_handler(int sig) 
+{
     write(STDOUT_FD,"SIGINT\n",7);
     kill(pid_writer,SIGKILL);
     return;
 }
 
-void sigusr1_handler(int sig) {
+void sigusr1_handler(int sig) 
+{
     if(write(fd,"SIGN:1",7)==-1)
         perror("error on SIGN:1 didn't send to FIFO");      
     write(STDOUT_FD,"SIGUSR1\n",9);
     return;
 }
 
-void sigusr2_handler(int sig) {
+void sigusr2_handler(int sig) 
+{
     if(write(fd,"SIGN:2",7)==-1)
         perror("error on SIGN:2 didn't send to FIFO");      
     write(STDOUT_FD,"SIGUSR2\n",9);

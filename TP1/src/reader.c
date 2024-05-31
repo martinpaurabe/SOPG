@@ -122,7 +122,7 @@ int main(void)
                     }   
                 }    
                 if(write(fdsign,s,num+2) == -1)
-                 {
+                {
                     perror("SIGN:1 MSG couldn't be written on Sign.txt");
                     close(fdsign);
                     exit(EXIT_ERROR);
@@ -143,7 +143,7 @@ int main(void)
                 }    
                 if(write(fdsign,s,num+2) == -1)
                 {
-                    perror("SIGN:1 MSG couldn't be written on Sign.txt");
+                    perror("SIGN:2 MSG couldn't be written on Sign.txt");
                     close(fdsign);
                     exit(EXIT_ERROR);
                 }
