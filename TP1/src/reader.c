@@ -80,7 +80,15 @@ int main(void)
     int num;
     do {
         if ((num = read(fd, s, 300)) == -1)
+        {
             perror("read");
+            exit(EXIT_ERROR);
+        }
+        else if(0 == num)
+        {
+            perror("EOF");
+            exit(EXIT_ERROR);
+        }
         else 
         {
             s[num] = '\0';

@@ -46,6 +46,7 @@ pid_t pid_writer;
 int fd = 0;
 /********************** internal functions declaration ***********************/
 void sigint_handler(int sig);
+void sigpipe_handler(int sig);
 void sigusr1_handler(int sig);
 void sigusr2_handler(int sig);
 
@@ -63,12 +64,23 @@ int main(void)
     pid_writer = getpid();
     printf("PROCESO WRITER PID = %d\n", getpid());
 
-    // User 1 signal process inicitilize
+    // Signal Interrupt signal process inicitilize
 	struct sigaction sa_int;
 	sa_int.sa_handler = sigint_handler;
 	sa_int.sa_flags = 0; //SA_RESTART;
 	sigemptyset(&sa_int.sa_mask);
     if (sigaction(SIGINT, &sa_int, NULL) == -1)
+    {
+        perror("sigaction");
+        exit(EXIT_ERROR);
+    }
+
+    // signal pipe signal process inicitilize (reader() closes)
+	struct sigaction sa_pipe;
+	sa_pipe.sa_handler = sigpipe_handler;
+	sa_pipe.sa_flags = 0; //SA_RESTART;
+	sigemptyset(&sa_int.sa_mask);
+    if (sigaction(SIGPIPE, &sa_pipe, NULL) == -1)
     {
         perror("sigaction");
         exit(EXIT_ERROR);
@@ -145,6 +157,13 @@ int main(void)
 void sigint_handler(int sig) 
 {
     write(STDOUT_FD,"SIGINT\n",7);
+    kill(pid_writer,SIGKILL);
+    return;
+}
+
+void sigpipe_handler(int sig) 
+{
+    perror("reader closed");
     kill(pid_writer,SIGKILL);
     return;
 }
