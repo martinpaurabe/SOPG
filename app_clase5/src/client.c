@@ -29,6 +29,10 @@ int main(void) {
     }
 
     // Enviamos mensaje a server
+    char ipServer[32];
+    inet_ntop(AF_INET, &(serveraddr.sin_addr), ipServer, sizeof(ipServer));
+    printf("Conectado con Server IP: %s\n", ipServer);
+
     printf("Ingrese un mensaje:\n");
     char buf[128];
     fgets(buf, sizeof(buf), stdin);
